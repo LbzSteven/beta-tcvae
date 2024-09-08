@@ -97,7 +97,8 @@ def analytical_NLL(qz_params, q_dist, prior_dist, qz_samples=None):
         nlogqz_condx (K,) Variable
         nlogpz (K,) Variable
     """
-    pz_params = Variable(torch.zeros(1).type_as(qz_params.data).expand(qz_params.size()), volatile=True)
+    with torch.no_grad():
+        pz_params = Variable(torch.zeros(1).type_as(qz_params.data).expand(qz_params.size()))
 
     nlogqz_condx = q_dist.NLL(qz_params).mean(0)
     nlogpz = prior_dist.NLL(pz_params, qz_params).mean(0)
