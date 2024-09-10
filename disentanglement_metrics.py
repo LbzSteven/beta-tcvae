@@ -79,11 +79,12 @@ def mutual_info_metric_shapes(vae, shapes_dataset):
     qz_params = torch.Tensor(N, K, nparams)
 
     n = 0
-    for xs in dataset_loader:
-        batch_size = xs.size(0)
-        xs = Variable(xs.view(batch_size, 1, 64, 64).cuda(), volatile=True)
-        qz_params[n:n + batch_size] = vae.encoder.forward(xs).view(batch_size, vae.z_dim, nparams).data
-        n += batch_size
+    with torch.no_grad():
+        for xs in dataset_loader:
+            batch_size = xs.size(0)
+            xs = Variable(xs.view(batch_size, 1, 64, 64).cuda())
+            qz_params[n:n + batch_size] = vae.encoder.forward(xs).view(batch_size, vae.z_dim, nparams).data
+            n += batch_size
 
     qz_params = Variable(qz_params.view(3, 6, 40, 32, 32, K, nparams).cuda())
     qz_samples = vae.q_dist.sample(params=qz_params)
@@ -162,11 +163,12 @@ def mutual_info_metric_faces(vae, shapes_dataset):
     qz_params = torch.Tensor(N, K, nparams)
 
     n = 0
-    for xs in dataset_loader:
-        batch_size = xs.size(0)
-        xs = Variable(xs.view(batch_size, 1, 64, 64).cuda(), volatile=True)
-        qz_params[n:n + batch_size] = vae.encoder.forward(xs).view(batch_size, vae.z_dim, nparams).data
-        n += batch_size
+    with torch.no_grad():
+        for xs in dataset_loader:
+            batch_size = xs.size(0)
+            xs = Variable(xs.view(batch_size, 1, 64, 64).cuda())
+            qz_params[n:n + batch_size] = vae.encoder.forward(xs).view(batch_size, vae.z_dim, nparams).data
+            n += batch_size
 
     qz_params = Variable(qz_params.view(50, 21, 11, 11, K, nparams).cuda())
     qz_samples = vae.q_dist.sample(params=qz_params)

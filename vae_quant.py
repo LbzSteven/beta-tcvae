@@ -414,6 +414,7 @@ def main():
     dataset_size = len(train_loader.dataset)
     num_iterations = len(train_loader) * args.num_epochs
     iteration = 0
+
     # initialize loss accumulator
     elbo_running_mean = utils.RunningAverageMeter()
     while iteration < num_iterations:
@@ -452,7 +453,7 @@ def main():
 
                 utils.save_checkpoint({
                     'state_dict': vae.state_dict(),
-                    'args': args}, args.save, 0)
+                    'args': args}, args.save, iteration)
                 eval('plot_vs_gt_' + args.dataset)(vae, train_loader.dataset,
                     os.path.join(args.save, 'gt_vs_latent_{:05d}.png'.format(iteration)))
 
@@ -460,7 +461,7 @@ def main():
     vae.eval()
     utils.save_checkpoint({
         'state_dict': vae.state_dict(),
-        'args': args}, args.save, 0)
+        'args': args}, args.save, iteration)
     dataset_loader = DataLoader(train_loader.dataset, batch_size=1000, num_workers=1, shuffle=False)
     logpx, dependence, information, dimwise_kl, analytical_cond_kl, marginal_entropies, joint_entropy = \
         elbo_decomposition(vae, dataset_loader)
